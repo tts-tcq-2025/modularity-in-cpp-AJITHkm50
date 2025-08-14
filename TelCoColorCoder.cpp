@@ -1,69 +1,69 @@
-// TelCoColorCoder.cpp
-#include "TelCoColorCoder.h" // Include its own header
-#include <stdexcept>         // For std::out_of_range or similar error handling
+#include "TelCoColorCoder.h" // Include its own header for declarations
+#include <string>            // Already included, but good practice for .cpp files
 
 namespace TelCoColorCoder
 {
-    // Definitions of the color names and counts
-    const char* MajorColorNames[] = {
-        "White", "Red", "Black", "Yellow", "Violet"
-    };
-    const int numberOfMajorColors =
-        sizeof(MajorColorNames) / sizeof(MajorColorNames[0]);
-
-    const char* MinorColorNames[] = {
-        "Blue", "Orange", "Green", "Brown", "Slate"
-    };
-    const int numberOfMinorColors =
-        sizeof(MinorColorNames) / sizeof(MinorColorNames[0]);
-
-    // ColorPair Class Implementation
-    ColorPair::ColorPair(MajorColor major, MinorColor minor) :
-        majorColor(major), minorColor(minor)
-    {}
-
-    MajorColor ColorPair::getMajor() const {
-        return majorColor;
+    // Definitions of the color name std::arrays.
+    // These match the declarations in the header.
+    namespace detail {
+        const std::array<const char*, 5> kMajorColorNames = {
+            "White", "Red", "Black", "Yellow", "Violet"
+        };
+        const std::array<const char*, 5> kMinorColorNames = {
+            "Blue", "Orange", "Green", "Brown", "Slate"
+        };
     }
 
-    MinorColor ColorPair::getMinor() const {
-        return minorColor;
+    // ColorPair class implementations.
+    ColorPair::ColorPair(MajorColor major, MinorColor minor) noexcept
+        : majorColor_(major), minorColor_(minor) {}
+
+    MajorColor ColorPair::getMajor() const noexcept {
+        return majorColor_;
+    }
+
+    MinorColor ColorPair::getMinor() const noexcept {
+        return minorColor_;
     }
 
     std::string ColorPair::ToString() const {
-        std::string colorPairStr = MajorColorNames[majorColor];
-        colorPairStr += " ";
-        colorPairStr += MinorColorNames[minorColor];
-        return colorPairStr;
+        // Explicitly cast enum class to int to index std::array.
+        return std::string(detail::kMajorColorNames[static_cast<int>(majorColor_)]) +
+               " " +
+               std::string(detail::kMinorColorNames[static_cast<int>(minorColor_)]);
     }
 
-    // Free functions for color-number conversion
+    // Converts a pair number to a ColorPair.
     ColorPair GetColorFromPairNumber(int pairNumber) {
-        // Validate input pairNumber
+        // Validate input pairNumber against the maximum possible pairs.
         if (pairNumber < 1 || pairNumber > GetMaxPairNumber()) {
-            throw std::out_of_range("Pair number out of range: " + std::to_string(pairNumber));
+            throw ColorCodeError("Pair number " + std::to_string(pairNumber) + " is out of valid range.");
         }
 
-        int zeroBasedPairNumber = pairNumber - 1;
-        MajorColor majorColor =
-            static_cast<MajorColor>(zeroBasedPairNumber / numberOfMinorColors);
-        MinorColor minorColor =
-            static_cast<MinorColor>(zeroBasedPairNumber % numberOfMinorColors);
+        const int zeroBasedPairNumber = pairNumber - 1;
+
+        // Calculation relies on integer division and modulo.
+        // Explicitly cast to enum class types after calculation.
+        MajorColor majorColor = static_cast<MajorColor>(zeroBasedPairNumber / detail::kNumberOfMinorColors);
+        MinorColor minorColor = static_cast<MinorColor>(zeroBasedPairNumber % detail::kNumberOfMinorColors);
+
         return ColorPair(majorColor, minorColor);
     }
 
+    // Converts MajorColor and MinorColor to a pair number.
     int GetPairNumberFromColor(MajorColor major, MinorColor minor) {
-        // Basic validation for major and minor enums
-        if (major < WHITE || major >= numberOfMajorColors ||
-            minor < BLUE || minor >= numberOfMinorColors)
-        {
-            throw std::out_of_range("Invalid major or minor color enum value.");
+        // Using static_cast<int>(enum_class) for calculations.
+        const int majorIdx = static_cast<int>(major);
+        const int minorIdx = static_cast<int>(minor);
+
+        // Input validation for enum values. While enum class provides type safety,
+        // it's possible to cast invalid integers to enum values.
+        if (majorIdx < 0 || majorIdx >= static_cast<int>(detail::kNumberOfMajorColors) ||
+            minorIdx < 0 || minorIdx >= static_cast<int>(detail::kNumberOfMinorColors)) {
+            throw ColorCodeError("Invalid major or minor color enum value provided.");
         }
-        return major * numberOfMinorColors + minor + 1;
-    }
 
-    int GetMaxPairNumber() {
-        return numberOfMajorColors * numberOfMinorColors;
+        // Formula for 1-based pair number.
+        return (majorIdx * static_cast<int>(detail::kNumberOfMinorColors)) + minorIdx + 1;
     }
-
-} // namespace TelCoColorCoder
+}
