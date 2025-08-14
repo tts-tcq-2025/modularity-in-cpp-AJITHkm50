@@ -1,53 +1,65 @@
-// TelCoColorCoder.h
-#ifndef TEL_CO_COLOR_CODER_H
-#define TEL_CO_COLOR_CODER_H
-
-#include <string> // Required for std::string
-#include <vector> // Required for storing color names
+#include "TelCoColorCoder.h"
+#include <stdexcept>
 
 namespace TelCoColorCoder
 {
-    // Enum for Major Colors
-    enum MajorColor {WHITE, RED, BLACK, YELLOW, VIOLET};
-
-    // Enum for Minor Colors
-    enum MinorColor {BLUE, ORANGE, GREEN, BROWN, SLATE};
-
-    // Arrays to store human-readable names for Major and Minor Colors
-    // extern is used here because the actual definition (storage) will be in the .cpp file
-    extern const char* MajorColorNames[];
-    extern const int numberOfMajorColors; // Extern as definition is in .cpp
-
-    extern const char* MinorColorNames[];
-    extern const int numberOfMinorColors; // Extern as definition is in .cpp
-
-    // Class to represent a color pair
-    class ColorPair {
-    private:
-        MajorColor majorColor;
-        MinorColor minorColor;
-
-    public:
-        // Constructor
-        ColorPair(MajorColor major, MinorColor minor);
-
-        // Getters for major and minor colors
-        MajorColor getMajor() const; // const correctness: doesn't modify the object
-        MinorColor getMinor() const; // const correctness: doesn't modify the object
-
-        // Returns a string representation of the color pair
-        std::string ToString() const; // const correctness
+    // Definitions of the color names and counts
+    const char* MajorColorNames[] = {
+        "White", "Red", "Black", "Yellow", "Violet"
     };
+    const int numberOfMajorColors =
+        sizeof(MajorColorNames) / sizeof(MajorColorNames[0]);
 
-    // Function to get a ColorPair from its pair number
-    ColorPair GetColorFromPairNumber(int pairNumber);
+    const char* MinorColorNames[] = {
+        "Blue", "Orange", "Green", "Brown", "Slate"
+    };
+    const int numberOfMinorColors =
+        sizeof(MinorColorNames) / sizeof(MinorColorNames[0]);
 
-    // Function to get the pair number from a ColorPair
-    int GetPairNumberFromColor(MajorColor major, MinorColor minor);
+    ColorPair::ColorPair(MajorColor major, MinorColor minor) :
+        majorColor(major), minorColor(minor)
+    {}
 
-    // Function to get total number of unique color pairs
-    int GetMaxPairNumber();
+    MajorColor ColorPair::getMajor() const {
+        return majorColor;
+    }
+
+    MinorColor ColorPair::getMinor() const {
+        return minorColor;
+    }
+
+    std::string ColorPair::ToString() const {
+        std::string colorPairStr = MajorColorNames[majorColor];
+        colorPairStr += " ";
+        colorPairStr += MinorColorNames[minorColor];
+        return colorPairStr;
+    }
+
+    // Converts pair number to ColorPair; throws if out of range
+    ColorPair GetColorFromPairNumber(int pairNumber) {
+        if (pairNumber < 1 || pairNumber > GetMaxPairNumber()) {
+            throw std::out_of_range("Pair number out of range: " + std::to_string(pairNumber));
+        }
+        int zeroBasedPairNumber = pairNumber - 1;
+        MajorColor majorColor =
+            static_cast<MajorColor>(zeroBasedPairNumber / numberOfMinorColors);
+        MinorColor minorColor =
+            static_cast<MinorColor>(zeroBasedPairNumber % numberOfMinorColors);
+        return ColorPair(majorColor, minorColor);
+    }
+
+    // Converts ColorPair to pair number; throws if enums are invalid
+    int GetPairNumberFromColor(MajorColor major, MinorColor minor) {
+        if (major < WHITE || major >= numberOfMajorColors ||
+            minor < BLUE || minor >= numberOfMinorColors)
+        {
+            throw std::out_of_range("Invalid major or minor color enum value.");
+        }
+        return major * numberOfMinorColors + minor + 1;
+    }
+
+    int GetMaxPairNumber() {
+        return numberOfMajorColors * numberOfMinorColors;
+    }
 
 } // namespace TelCoColorCoder
-
-#endif // TEL_CO_COLOR_CODER_H
