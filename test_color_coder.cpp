@@ -29,18 +29,18 @@ static void testPairToNumber(MajorColor major, MinorColor minor, int expectedPai
 
 void runColorCoderTests() {
     // Test cases for number to pair conversion
-    testNumberToPair(4, TelCoColorCoder::WHITE, TelCoColorCoder::BROWN);
-    testNumberToPair(5, TelCoColorCoder::WHITE, TelCoColorCoder::SLATE);
-    testNumberToPair(1, TelCoColorCoder::WHITE, TelCoColorCoder::BLUE);
-    testNumberToPair(25, TelCoColorCoder::VIOLET, TelCoColorCoder::SLATE);
+    testNumberToPair(4, TelCo::Major::WHITE, TelCo::Minor::BROWN);
+    testNumberToPair(5, TelCo::Major::WHITE, TelCo::Minor::SLATE);
+    testNumberToPair(1, TelCo::Major::WHITE, TelCo::Minor::BLUE);
+    testNumberToPair(25, TelCo::Major::VIOLET, TelCo::Minor::SLATE);
 
     // Test cases for pair to number conversion
-    testPairToNumber(TelCoColorCoder::BLACK, TelCoColorCoder::ORANGE, 12);
-    testPairToNumber(TelCoColorCoder::VIOLET, TelCoColorCoder::SLATE, 25);
-    testPairToNumber(TelCoColorCoder::WHITE, TelCoColorCoder::BLUE, 1);
+    testPairToNumber(TelCo::Major::BLACK, TelCo::Minor::ORANGE, 12);
+    testPairToNumber(TelCo::Major::VIOLET, TelCo::Minor::SLATE, 25);
+    testPairToNumber(TelCo::Major::WHITE, TelCo::Minor::BLUE, 1);
 
     // Test boundary conditions
-    testNumberToPair(TelCoColorCoder::GetMaxPairNumber(), TelCoColorCoder::VIOLET, TelCoColorCoder::SLATE);
-    testPairToNumber(TelCoColorCoder::WHITE, TelCoColorCoder::BLUE, 1);
+    testNumberToPair(GetMaxPairNumber(), TelCo::Major::VIOLET, TelCo::Minor::SLATE);
+    testPairToNumber(TelCo::Major::WHITE, TelCo::Minor::BLUE, 1);
     std::cout << "\nAll TelCo Color Coder Tests Passed!" << std::endl;
 }
