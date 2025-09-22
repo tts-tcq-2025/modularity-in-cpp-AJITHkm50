@@ -19,7 +19,7 @@ static void testNumberToPair(int pairNumber, MajorColor expectedMajor, MinorColo
 static void testPairToNumber(MajorColor major, MinorColor minor, int expectedPairNumber) {
     try {
         int pairNumber = GetPairNumberFromColor(major, minor);
-        std::cout << "Test: " << MajorColorNames[major] << " " << MinorColorNames[minor] << " -> Pair Number " << pairNumber << std::endl;
+        std::cout << "Test: " << MajorColorNames[static_cast<int>(major)] << " " << MinorColorNames[static_cast<int>(minor)] << " -> Pair Number " << pairNumber << std::endl;
         assert(pairNumber == expectedPairNumber);
     } catch (const std::out_of_range& e) {
         std::cerr << "Test failed for color pair: " << e.what() << std::endl;
@@ -29,18 +29,18 @@ static void testPairToNumber(MajorColor major, MinorColor minor, int expectedPai
 
 void runColorCoderTests() {
     // Test cases for number to pair conversion
-    testNumberToPair(4, WHITE, BROWN);
-    testNumberToPair(5, WHITE, SLATE);
-    testNumberToPair(1, WHITE, BLUE);
-    testNumberToPair(25, VIOLET, SLATE);
+    testNumberToPair(4, TelCoColorCoder::WHITE, TelCoColorCoder::BROWN);
+    testNumberToPair(5, TelCoColorCoder::WHITE, TelCoColorCoder::SLATE);
+    testNumberToPair(1, TelCoColorCoder::WHITE, TelCoColorCoder::BLUE);
+    testNumberToPair(25, TelCoColorCoder::VIOLET, TelCoColorCoder::SLATE);
 
     // Test cases for pair to number conversion
-    testPairToNumber(BLACK, ORANGE, 12);
-    testPairToNumber(VIOLET, SLATE, 25);
-    testPairToNumber(WHITE, BLUE, 1);
+    testPairToNumber(TelCoColorCoder::BLACK, TelCoColorCoder::ORANGE, 12);
+    testPairToNumber(TelCoColorCoder::VIOLET, TelCoColorCoder::SLATE, 25);
+    testPairToNumber(TelCoColorCoder::WHITE, TelCoColorCoder::BLUE, 1);
 
     // Test boundary conditions
-    testNumberToPair(GetMaxPairNumber(), VIOLET, SLATE);
-    testPairToNumber(WHITE, BLUE, 1);
+    testNumberToPair(TelCoColorCoder::GetMaxPairNumber(), TelCoColorCoder::VIOLET, TelCoColorCoder::SLATE);
+    testPairToNumber(TelCoColorCoder::WHITE, TelCoColorCoder::BLUE, 1);
     std::cout << "\nAll TelCo Color Coder Tests Passed!" << std::endl;
 }
